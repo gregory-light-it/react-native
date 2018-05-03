@@ -109,19 +109,22 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     private void dismissExisting() {
-      if (isUsingSupportLibrary()) {
-        SupportAlertFragment oldFragment =
-            (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null) {
-          oldFragment.dismiss();
+      try {
+        if (isUsingSupportLibrary()) {
+          SupportAlertFragment oldFragment =
+                  (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+          if (oldFragment != null) {
+            oldFragment.dismissAllowingStateLoss();
+          }
+        } else {
+          AlertFragment oldFragment =
+                  (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+          if (oldFragment != null) {
+            oldFragment.dismissAllowingStateLoss();
+          }
         }
-      } else {
-        AlertFragment oldFragment =
-            (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null) {
-          oldFragment.dismiss();
-        }
-      }
+      } catch (IllegalStateException ise) {
+      } catch (Exception e) { }
     }
 
     public void showNewAlert(boolean isInForeground, Bundle arguments, Callback actionCallback) {
